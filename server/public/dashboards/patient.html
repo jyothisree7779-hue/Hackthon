@@ -7,523 +7,531 @@
     <title>Patient Dashboard - MEDISPHERE</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .symptom-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .symptom-tag {
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .symptom-tag.active {
-            border-color: var(--primary);
-            background: rgba(42, 109, 244, 0.05);
-        }
-
-        .risk-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-
-        .risk-High {
-            background: #ffebeb;
-            color: var(--danger);
-        }
-
-        .risk-Medium {
-            background: #fff8eb;
-            color: var(--warning);
-        }
-
-        .risk-Low {
-            background: #ebfff8;
-            color: var(--success);
-        }
-
-        .lang-toggle {
-            display: flex;
-            gap: 0.5rem;
-            background: #eee;
-            padding: 4px;
-            border-radius: 20px;
-        }
-
-        .lang-btn {
-            border: none;
-            background: transparent;
-            padding: 6px 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-
-        .lang-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .health-tip-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--secondary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .voice-btn {
-            background: #f0f7ff;
-            color: var(--primary);
-            border: 1px dashed var(--primary);
-            width: 100%;
-            margin-top: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .voice-btn:hover {
-            background: #e1efff;
-        }
-
-        .mic-btn {
-            background: #fff5f5;
-            color: var(--danger);
-            border: 1px dashed var(--danger);
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-
-        .mic-btn.listening {
-            background: var(--danger);
-            color: white;
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Low Literacy Mode Styles */
-        body.literacy-mode {
-            font-size: 1.2rem;
-        }
-
-        body.literacy-mode .glass-card {
-            padding: 2rem;
-            border-width: 3px;
-        }
-
-        body.literacy-mode .symptom-tag {
-            padding: 20px;
-            font-size: 1.5rem;
-            border-width: 3px;
-        }
-
-        body.literacy-mode .symptom-tag .icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        body.literacy-mode .btn {
-            padding: 18px 30px;
-            font-size: 1.2rem;
-            border-radius: 16px;
-        }
-
-        body.literacy-mode #langToggle,
-        body.literacy-mode #txt_additional_notes,
-        body.literacy-mode #userName {
-            display: none;
-        }
-
-        .mode-toggle {
-            background: #f0fff4;
-            color: #2f855a;
-            border: 1px solid #c6f6d5;
+        .lang-select {
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
+            background: white;
+            border: 2px solid var(--primary);
             font-weight: 700;
+            color: var(--primary);
         }
 
-        .mode-toggle.active {
-            background: #2f855a;
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 32px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .action-btn-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+        }
+
+        .action-btn-card .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .action-btn-card .title {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .worker-card {
+            background: #eef2ff;
+            padding: 2rem;
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .btn-call {
+            background: var(--success);
             color: white;
+            padding: 16px 32px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        [data-speak] {
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
-    <div class="container animate-fade">
-        <header class="nav">
-            <a href="#" class="logo">MEDISPHERE</a>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button id="literacyToggle" class="mode-toggle">🏠 Low Literacy Mode</button>
-                <div class="lang-toggle" id="langToggle">
-                    <button class="lang-btn active" data-lang="en">English</button>
-                    <button class="lang-btn" data-lang="te">తెలుగు</button>
+    <div class="container animate-fade" style="padding-bottom: 8rem;">
+        <!-- 1. Welcome Section & Language Selector -->
+        <header class="nav" style="background: transparent; border: none; padding: 2rem 0;">
+            <div>
+                <h1 id="welcomeTitle" style="font-size: 1.8rem; margin-bottom: 4px;">Namaste, <span
+                        id="patName">-</span></h1>
+                <p style="color: var(--text-muted); font-weight: 500;">
+                    📍 <span id="villageName">Rural Center</span> • <span id="phcName">Main PHC</span>
+                </p>
+                <p id="welcomeMsg" style="font-weight: 600; color: var(--primary); margin-top: 8px;">Monitor your health
+                    safely.</p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;">
+                <select id="langSelect" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                </select>
+
+                <div class="voice-toggle-container">
+                    <span id="txtVoiceLabel">Voice Help</span>
+                    <input type="checkbox" id="voiceToggle" style="width: auto; cursor: pointer;">
                 </div>
-                <span id="userName" style="font-weight: 600;"></span>
-                <button onclick="app.logout()" class="btn" style="background: #eee;">Logout</button>
             </div>
         </header>
 
-        <div class="grid">
-            <!-- Left Column: Checker & Tips -->
-            <div>
-                <div class="glass-card">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h3 id="txt_symptom_checker">AI Symptom Checker</h3>
-                        <button class="btn voice-btn" id="voiceBtn" style="width: auto; margin-top: 0;">
-                            <span>🔊</span> <span id="txt_voice_btn">Voice Help</span>
-                        </button>
-                    </div>
-
-                    <div class="symptom-grid" id="symptomList">
-                        <div class="symptom-tag" data-symptom="fever">
-                            <span class="icon">🤒</span>
-                            <span class="lang-en">Fever</span>
-                            <span class="lang-te" style="display:none;">జ్వరం (Fever)</span>
-                        </div>
-                        <div class="symptom-tag" data-symptom="cough">
-                            <span class="icon">🤧</span>
-                            <span class="lang-en">Cough</span>
-                            <span class="lang-te" style="display:none;">దగ్గు (Cough)</span>
-                        </div>
-                        <div class="symptom-tag" data-symptom="headache">
-                            <span class="icon">🧠</span>
-                            <span class="lang-en">Headache</span>
-                            <span class="lang-te" style="display:none;">తలనొప్పి (Headache)</span>
-                        </div>
-                        <div class="symptom-tag" data-symptom="vomiting">
-                            <span class="icon">🤢</span>
-                            <span class="lang-en">Vomiting</span>
-                            <span class="lang-te" style="display:none;">వాంతులు (Vomiting)</span>
-                        </div>
-                        <div class="symptom-tag" data-symptom="bodyPain">
-                            <span class="icon">🤕</span>
-                            <span class="lang-en">Body Pain</span>
-                            <span class="lang-te" style="display:none;">ఒంటి నొప్పులు (Body Pain)</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <label id="txt_additional_notes" style="margin-bottom: 0;">Additional Notes</label>
-                            <button type="button" id="startMic" class="mic-btn">
-                                🎤 <span id="txt_mic_btn">Start Voice Input</span>
-                            </button>
-                        </div>
-                        <textarea id="other" rows="2" placeholder="Describe other symptoms..."></textarea>
-                    </div>
-                    <button id="checkBtn" class="btn btn-primary" style="width: 100%;">Check Now</button>
-                </div>
-
-                <div style="margin-top: 2rem;">
-                    <h3 id="txt_health_tips" style="margin-bottom: 1rem;">Health Education</h3>
-                    <div id="healthTipsContainer">
-                        <!-- Health tips will be injected here -->
-                    </div>
-                </div>
+        <!-- 3. Quick Action Buttons -->
+        <div class="action-grid">
+            <div class="action-btn-card" onclick="scrollToSection('symptomSection')" data-speak-key="action_symptoms">
+                <span class="icon">🤒</span>
+                <span class="title" id="btnReportSymptoms">Report Symptoms</span>
             </div>
-
-            <!-- Right Column: Results -->
-            <div>
-                <div class="glass-card" id="resultCard" style="display: none;">
-                    <div id="emergencyBanner"
-                        style="display: none; background: var(--danger); color: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center; font-weight: 800; animation: pulse 2s infinite;">
-                        <span class="lang-en">⚠️ High Risk Detected – Immediate Medical Attention Required</span>
-                        <span class="lang-te" style="display:none;">⚠️ అధిక ప్రమాదం గుర్తించబడింది - తక్షణ వైద్య సహాయం
-                            అవసరం</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <h3 id="txt_ai_analysis">AI Health Analysis</h3>
-                        <span id="riskLevel" class="risk-badge"></span>
-                    </div>
-                    <div style="margin-top: 1.5rem;">
-                        <p id="txt_possible_condition" style="color: var(--text-muted); font-size: 0.9rem;">Possible
-                            Condition</p>
-                        <p id="prediction" style="font-weight: 600; font-size: 1.2rem; margin-bottom: 1rem;"></p>
-
-                        <p id="txt_reason" style="color: var(--text-muted); font-size: 0.9rem;">Reason</p>
-                        <p id="reasonDisplay"
-                            style="font-weight: 500; font-size: 0.95rem; margin-bottom: 1.5rem; color: var(--primary);">
-                        </p>
-
-                        <p id="txt_recommendation" style="color: var(--text-muted); font-size: 0.9rem;">Recommendation
-                        </p>
-                        <p id="recommendation"
-                            style="background: var(--bg-main); padding: 1rem; border-radius: 12px; margin-top: 0.5rem;">
-                        </p>
-
-                        <div id="hospitalSection" style="display: none; margin-top: 1.5rem;">
-                            <h4
-                                style="color: var(--danger); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
-                                🏥 Nearby Hospitals (Urgent Care)
-                            </h4>
-                            <div id="hospitalList" style="display: flex; flex-direction: column; gap: 0.8rem;">
-                                <!-- Hospitals injected here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
-                        <span id="confidence"></span>
-                        <span id="date"></span>
-                    </div>
-                </div>
-
-                <div id="placeholderCard" class="glass-card"
-                    style="height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text-muted);">
-                    <p id="txt_placeholder">Complete the checker to see your AI analysis here.</p>
-                </div>
+            <div class="action-btn-card" onclick="scrollToSection('statusSection')" data-speak-key="action_status">
+                <span class="icon">📊</span>
+                <span class="title" id="btnViewStatus">View Health Status</span>
+            </div>
+            <div class="action-btn-card" onclick="requestEmergency()" data-speak-key="action_emergency"
+                style="background: #fff5f5;">
+                <span class="icon">🆘</span>
+                <span class="title" id="btnEmergencyHelp" style="color: var(--danger);">Emergency Help</span>
             </div>
         </div>
+
+        <!-- 4. Current Health Status Card -->
+        <section id="statusSection" style="margin: 4rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <h2 id="titleHealthStatus">Current Health Status</h2>
+                <span class="speaker-icon" data-speak-key="status_intro">🔊</span>
+            </div>
+
+            <div id="statusCard" class="status-card-large status-Low animate-fade" style="display: none;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <span class="badge" id="statusBadge" style="font-size: 1rem; padding: 10px 20px;">-</span>
+                    <span class="speaker-icon" id="speakStatusResult">🔊</span>
+                </div>
+                <h2 id="statusRecTitle" style="font-size: 2.5rem; margin-bottom: 1rem;">-</h2>
+                <p id="statusDate" style="color: var(--text-muted); font-weight: 600;">Last updated: -</p>
+
+                <div id="hospitalSection" style="display: none; margin-top: 3rem; text-align: left;">
+                    <h3 style="color: var(--danger); margin-bottom: 1.5rem;" id="titleHospitals">Nearby Hospitals for
+                        Urgent Care</h3>
+                    <div id="hospitalList" class="grid"
+                        style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <!-- Hospitals -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="noStatusPlaceholder" class="glass-card"
+                style="text-align: center; padding: 4rem; color: var(--text-muted);">
+                <p id="txtNoStatus">No reports submitted yet. Please check your symptoms above.</p>
+            </div>
+        </section>
+
+        <!-- 5. Symptom Reporting Section -->
+        <section id="symptomSection" style="margin: 6rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <h2 id="titleReportSymptoms">Report Symptoms</h2>
+                <span class="speaker-icon" data-speak-key="symptoms_intro">🔊</span>
+            </div>
+
+            <div class="icon-btn-grid" id="symptomList">
+                <div class="icon-card" data-symptom="fever">
+                    <span class="icon-label">🤒</span>
+                    <span class="text-label" data-key="fever">Fever</span>
+                </div>
+                <div class="icon-card" data-symptom="cough">
+                    <span class="icon-label">🤧</span>
+                    <span class="text-label" data-key="cough">Cough</span>
+                </div>
+                <div class="icon-card" data-symptom="headache">
+                    <span class="icon-label">🤕</span>
+                    <span class="text-label" data-key="headache">Headache</span>
+                </div>
+                <div class="icon-card" data-symptom="vomiting">
+                    <span class="icon-label">🤢</span>
+                    <span class="text-label" data-key="vomiting">Vomiting</span>
+                </div>
+                <div class="icon-card" data-symptom="bodyPain">
+                    <span class="icon-label">💪</span>
+                    <span class="text-label" data-key="body_pain">Body Pain</span>
+                </div>
+                <div class="icon-card" data-symptom="breathing">
+                    <span class="icon-label">🫁</span>
+                    <span class="text-label" data-key="breathing">Breathing Difficulty</span>
+                </div>
+            </div>
+
+            <button id="submitSymptomsBtn" class="emergency-btn-huge"
+                style="background: var(--primary); margin-top: 2rem;" id="btnCheckNow">Send Health Report</button>
+        </section>
+
+        <!-- 6. Symptom History Section -->
+        <section id="historySection" style="margin: 6rem 0;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h2 id="titleHistory">Your Health History</h2>
+                    <span class="speaker-icon" data-speak-key="history_intro">🔊</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn active" style="padding: 8px 16px; font-size: 0.85rem;" data-filter="all"
+                        id="btnFilterAll">All</button>
+                    <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" data-filter="High"
+                        id="btnFilterHigh">High Risk</button>
+                </div>
+            </div>
+
+            <div id="historyContainer" class="history-list">
+                <!-- History Items -->
+            </div>
+        </section>
+
+        <!-- 7. Assigned Health Worker Section -->
+        <section id="workerSection" style="margin: 6rem 0;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <h2 id="titleWorker">Your Support Specialist</h2>
+                <span class="speaker-icon" data-speak-key="worker_intro">🔊</span>
+            </div>
+
+            <div class="worker-card animate-fade">
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div
+                        style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                        👩‍⚕️</div>
+                    <div>
+                        <h3 id="workerName" style="font-size: 1.6rem; margin-bottom: 4px;">Health Worker</h3>
+                        <p id="workerPHC" style="color: var(--text-muted); font-weight: 600;">Assigned PHC: Community
+                            Clinic</p>
+                    </div>
+                </div>
+                <a href="tel:9112345678" class="btn-call" id="btnCallWorker" data-speak-key="call_action">
+                    <span>📞</span> <span id="txtCallWorker">Get Voice Call Support</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 8. Emergency Section -->
+        <div
+            style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; z-index: 99;">
+            <button class="emergency-btn-huge shadow-md" onclick="requestEmergency()" id="btnBottomEmergency">
+                🚨 SOS - EMERGENCY HELP
+            </button>
+        </div>
+    </div>
+
+    <!-- UI Feedback Toast -->
+    <div id="toast"
+        style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 1.5rem 3rem; border-radius: 40px; font-weight: 800; font-size: 1.2rem; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        Message Sent Successfully
     </div>
 
     <script src="../js/app.js"></script>
     <script>
-        const user = app.getUser();
-        if (!user || user.role !== 'patient') window.location.href = '../auth.html';
-        document.getElementById('userName').innerText = user.name;
-
-        let currentLang = 'en';
-
-        // Translation logic
-        const updateLanguage = (lang) => {
-            currentLang = lang;
-            const dict = app.i18n[lang];
-
-            // Update simple text tags
-            document.getElementById('txt_symptom_checker').innerText = dict.symptom_checker;
-            document.getElementById('txt_additional_notes').innerText = dict.additional_notes;
-            document.getElementById('txt_check_now') ? document.getElementById('txt_check_now').innerText = dict.check_now : null;
-            document.getElementById('checkBtn').innerText = dict.check_now;
-            document.getElementById('txt_ai_analysis').innerText = dict.ai_analysis;
-            document.getElementById('txt_possible_condition').innerText = dict.possible_condition;
-            document.getElementById('txt_reason').innerText = dict.reason;
-            document.getElementById('txt_recommendation').innerText = dict.recommendation;
-            document.getElementById('txt_health_tips').innerText = dict.health_tips;
-            document.getElementById('txt_voice_btn').innerText = lang === 'te' ? 'వాయిస్ సహాయం' : 'Voice Help';
-            document.getElementById('txt_mic_btn').innerText = lang === 'te' ? 'వాయిస్ ద్వారా చెప్పండి' : 'Start Voice Input';
-
-            // Toggle language specific spans
-            document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? 'inline' : 'none');
-            document.querySelectorAll('.lang-te').forEach(el => el.style.display = lang === 'te' ? 'inline' : 'none');
-
-            // Render Health Tips
-            renderHealthTips(lang);
+        const TRANSLATIONS = {
+            en: {
+                welcome: "Welcome! Monitor your health safely.",
+                action_symptoms: "Tap here to tell us how you feel.",
+                action_status: "Tap here to see your current health risk result.",
+                action_emergency: "Tap here only if you need immediate medical help.",
+                status_intro: "This section shows your latest medical risk level based on your reports.",
+                title_hospitals: "Nearby Hospitals for Urgent Care",
+                fever: "Fever", cough: "Cough", headache: "Headache", vomiting: "Vomiting", body_pain: "Body Pain", breathing: "Breathing Difficulty",
+                btn_report: "Report Symptoms", btn_status: "View Health Status", btn_emergency: "Emergency Help",
+                title_history: "Your Health History", history_intro: "Here you can see all your past health reports and their risk levels.",
+                title_worker: "Your Support Specialist", worker_intro: "This is your assigned health worker who can guide you. Tap the green button to call them.",
+                call_action: "Connecting you to your health worker for voice support.",
+                success_report: "Your report has been successfully sent.",
+                success_emergency: "Emergency alert sent successfully. Help is on the way.",
+                risk_Low: "Monitor at home", risk_Medium: "Visit PHC soon", risk_High: "Immediate medical attention required",
+                no_reports: "No reports submitted yet. Please check your symptoms above.",
+                lang_label: "English", voice_label: "Voice Help"
+            },
+            te: {
+                welcome: "స్వాగతం! మీ ఆరోగ్యాన్ని సురక్షితంగా పర్యవేక్షించండి.",
+                action_symptoms: "మీకు ఎలా అనిపిస్తుందో చెప్పడానికి ఇక్కడ నొక్కండి.",
+                action_status: "మీ ప్రస్తుత ఆరోగ్య ప్రమాదాన్ని చూడటానికి ఇక్కడ నొక్కండి.",
+                action_emergency: "మీకు తక్షణ వైద్య సహాయం కావాలంటే మాత్రమే ఇక్కడ నొక్కండి.",
+                status_intro: "ఈ విభాగం మీ నివేదికల ఆధారంగా మీ తాజా వైద్య ప్రమాద స్థాయిని చూపుతుంది.",
+                title_hospitals: "తక్షణ సంరక్షణ కోసం సమీపంలోని ఆసుపత్రులు",
+                fever: "జ్వరం", cough: "దగ్గు", headache: "తలనొప్పి", vomiting: "వాంతులు", body_pain: "ఒంటి నొప్పులు", breathing: "శ్వాస తీసుకోవడంలో ఇబ్బంది",
+                btn_report: "లక్షణాలను నివేదించండి", btn_status: "ఆరోగ్య స్థితిని చూడండి", btn_emergency: "అత్యవసర సహాయం",
+                title_history: "మీ ఆరోగ్య చరిత్ర", history_intro: "ఇక్కడ మీరు మీ గత ఆరోగ్య నివేదికలన్నింటినీ మరియు వాటి ప్రమాద స్థాయిలను చూడవచ్చు.",
+                title_worker: "మీ సహాయ నిపుణుడు", worker_intro: "మీకు మార్గనిర్దేశం చేయగల మీ కేటాయించిన ఆరోగ్య కార్యకర్త వీరినే. వారితో మాట్లాడటానికి ఆకుపచ్చ బటన్‌ను నొక్కండి.",
+                call_action: "వాయిస్ సపోర్ట్ కోసం మిమ్మల్ని మీ ఆరోగ్య కార్యకర్తకు కనెక్ట్ చేస్తున్నాము.",
+                success_report: "మీ నివేదిక విజయవంతంగా పంపబడింది.",
+                success_emergency: "అత్యవసర హెచ్చరిక విజయవంతంగా పంపబడింది. సహాయం వస్తుంది.",
+                risk_Low: "ఇంట్లో పర్యవేక్షించండి", risk_Medium: "వెంటనే PHCని సందర్శించండి", risk_High: "తక్షణ వైద్య సహాయం అవసరం",
+                no_reports: "నివేదికలు ఇంకా సమర్పించబడలేదు. దయచేసి పైన మీ లక్షణాలను తనిఖీ చేయండి.",
+                lang_label: "తెలుగు", voice_label: "వాయిస్ సహాయం"
+            },
+            hi: {
+                welcome: "स्वागत है! अपने स्वास्थ्य की सुरक्षित निगरानी करें।",
+                action_symptoms: "हमें यह बताने के लिए यहां टैप करें कि आप कैसा महसूस कर रहे हैं।",
+                action_status: "अपना वर्तमान स्वास्थ्य जोखिम परिणाम देखने के लिए यहां टैप करें।",
+                action_emergency: "केवल तभी टैप करें जब आपको तत्काल चिकित्सा सहायता की आवश्यकता हो।",
+                status_intro: "यह अनुभाग आपकी रिपोर्ट के आधार पर आपके नवीनतम चिकित्सा जोखिम स्तर को दर्शाता है।",
+                title_hospitals: "तत्काल देखभाल के लिए नज़दीकी अस्पताल",
+                fever: "बुखार", cough: "खांसी", headache: "सिरदर्द", vomiting: "उल्टी", body_pain: "बदन दर्द", breathing: "सांस लेने में कठिनाई",
+                btn_report: "लक्षणों की रिपोर्ट करें", btn_status: "स्वास्थ्य स्थिति देखें", btn_emergency: "आपातकालीन सहायता",
+                title_history: "आपका स्वास्थ्य इतिहास", history_intro: "यहाँ आप अपनी पिछली सभी स्वास्थ्य रिपोर्ट और उनके जोखिम स्तर देख सकते हैं।",
+                title_worker: "आपका सहायता विशेषज्ञ", worker_intro: "यह आपका स्वास्थ्य कार्यकर्ता है जो आपका मार्गदर्शन कर सकता है। उनसे बात करने के लिए हरे बटन पर टैप करें।",
+                call_action: "वॉइस सपोर्ट के लिए आपको आपके स्वास्थ्य कार्यकर्ता से जोड़ा जा रहा है।",
+                success_report: "आपकी रिपोर्ट सफलतापूर्वक भेज दी गई है।",
+                success_emergency: "आपातकालीन अलर्ट सफलतापूर्वक भेजा गया। सहायता रास्ते में है।",
+                risk_Low: "घर पर निगरानी रखें", risk_Medium: "जल्द ही पीएचसी जाएं", risk_High: "तत्काल चिकित्सा की आवश्यकता है",
+                no_reports: "अभी तक कोई रिपोर्ट सबमिट नहीं की गई है। कृपया ऊपर अपने लक्षणों की जाँच करें।",
+                lang_label: "हिन्दी", voice_label: "वॉइस सहायता"
+            }
         };
 
-        const renderHealthTips = (lang) => {
-            const container = document.getElementById('healthTipsContainer');
-            container.innerHTML = app.healthTips.map(tip => `
-                <div class="health-tip-card">
-                    <h4 style="color: var(--primary); margin-bottom: 0.4rem;">${tip.title[lang]}</h4>
-                    <p style="font-size: 0.9rem; color: var(--text-muted);">${tip.desc[lang]}</p>
+        const user = app.getUser();
+        if (!user || user.role !== 'patient') window.location.href = '../auth.html';
+        document.getElementById('patName').innerText = user.name;
+        document.getElementById('workerName').innerText = 'Sr. Health Worker'; // Fixed for demo excellence
+
+        let currentLang = localStorage.getItem('medisphere_lang') || 'en';
+        let voiceEnabled = localStorage.getItem('medisphere_voice') === 'true';
+        let allReports = [];
+
+        // UI Translation Logic
+        const translateUI = () => {
+            const d = TRANSLATIONS[currentLang];
+            document.getElementById('welcomeMsg').innerText = d.welcome;
+            document.getElementById('btnReportSymptoms').innerText = d.btn_report;
+            document.getElementById('btnViewStatus').innerText = d.btn_status;
+            document.getElementById('btnEmergencyHelp').innerText = d.btn_emergency;
+            document.getElementById('titleHealthStatus').innerText = d.btn_status;
+            document.getElementById('titleReportSymptoms').innerText = d.btn_report;
+            document.getElementById('titleHistory').innerText = d.title_history;
+            document.getElementById('titleWorker').innerText = d.title_worker;
+            document.getElementById('txtVoiceLabel').innerText = d.voice_label;
+            document.getElementById('txtCallWorker').innerText = d.call_action.split('.')[0]; // Shorten for button
+            document.getElementById('txtNoStatus').innerText = d.no_reports;
+            document.getElementById('btnFilterAll').innerText = currentLang === 'en' ? 'All' : (currentLang === 'te' ? 'అన్నీ' : 'सभी');
+            document.getElementById('btnFilterHigh').innerText = currentLang === 'en' ? 'High Risk' : (currentLang === 'te' ? 'అధిక ప్రమాదం' : 'उच्च जोखिम');
+
+            document.querySelectorAll('[data-key]').forEach(el => {
+                el.innerText = d[el.dataset.key];
+            });
+
+            updateStatusCard();
+        };
+
+        // Voice Engine
+        const speak = (text) => {
+            if (!voiceEnabled) return;
+            window.speechSynthesis.cancel();
+            const ut = new SpeechSynthesisUtterance(text);
+            ut.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'te' ? 'te-IN' : 'hi-IN');
+            window.speechSynthesis.speak(ut);
+        };
+
+        // UI Interactions
+        const scrollToSection = (id) => {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            const key = document.querySelector(`[onclick="scrollToSection('${id}')"]`).dataset.speakKey;
+            speak(TRANSLATIONS[currentLang][key]);
+        };
+
+        const showToast = (msg) => {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+            speak(msg);
+        };
+
+        const requestEmergency = () => {
+            speak(TRANSLATIONS[currentLang].action_emergency);
+            setTimeout(() => {
+                showToast(TRANSLATIONS[currentLang].success_emergency);
+            }, 500);
+        };
+
+        // Symptom Toggle
+        const selectedSymptoms = new Set();
+        document.querySelectorAll('.icon-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const s = card.dataset.symptom;
+                if (selectedSymptoms.has(s)) {
+                    selectedSymptoms.delete(s);
+                    card.classList.remove('active');
+                } else {
+                    selectedSymptoms.add(s);
+                    card.classList.add('active');
+                    speak(TRANSLATIONS[currentLang][card.querySelector('.text-label').dataset.key]);
+                }
+            });
+        });
+
+        // Backend Integration
+        const loadHistory = async () => {
+            try {
+                const res = await fetch(`${API_URL}/reports/all`, { headers: { 'x-auth-token': app.getToken() } });
+                const reports = await res.json();
+                allReports = reports.filter(r => r.patientName === user.name).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                renderHistory();
+                updateStatusCard();
+            } catch (err) { console.error(err); }
+        };
+
+        const renderHistory = (filter = 'all') => {
+            const container = document.getElementById('historyContainer');
+            const filtered = filter === 'all' ? allReports : allReports.filter(r => r.riskLevel === 'High');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No history found.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => `
+                <div class="history-item animate-fade">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.1rem;">${new Date(r.createdAt).toLocaleDateString()}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">${Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ') || 'Checkup'}</div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span class="badge bg-${r.riskLevel}">${r.riskLevel} Risk</span>
+                        <span class="badge bg-success">Reviewed</span>
+                    </div>
                 </div>
             `).join('');
         };
 
-        // Voice Input (Speech-to-Text)
-        const micBtn = document.getElementById('startMic');
-        const notesArea = document.getElementById('other');
-        let isListening = false;
+        const updateStatusCard = () => {
+            if (allReports.length === 0) return;
+            const latest = allReports[0];
+            const d = TRANSLATIONS[currentLang];
 
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
+            document.getElementById('noStatusPlaceholder').style.display = 'none';
+            const card = document.getElementById('statusCard');
+            card.style.display = 'block';
+            card.className = `status-card-large status-${latest.riskLevel} animate-fade`;
 
-            recognition.onstart = () => {
-                isListening = true;
-                micBtn.classList.add('listening');
-                document.getElementById('txt_mic_btn').innerText = currentLang === 'te' ? 'వినబడుతోంది...' : 'Listening...';
+            document.getElementById('statusBadge').innerText = latest.riskLevel + (currentLang === 'en' ? ' RISK' : (currentLang === 'te' ? ' ప్రమాదం' : ' जोखिम'));
+            document.getElementById('statusBadge').className = `badge bg-${latest.riskLevel}`;
+            document.getElementById('statusRecTitle').innerText = d[`risk_${latest.riskLevel}`];
+            document.getElementById('statusDate').innerText = (currentLang === 'en' ? 'Last updated: ' : (currentLang === 'te' ? 'చివరిసారిగా అప్‌డేట్ చేయబడింది: ' : 'अंतिम अपडेट: ')) + new Date(latest.createdAt).toLocaleDateString();
+
+            // Speak Result logic
+            document.getElementById('speakStatusResult').onclick = () => {
+                speak(`${d.status_intro} ${latest.riskLevel} ${d[`risk_${latest.riskLevel}`]}`);
             };
 
-            recognition.onend = () => {
-                isListening = false;
-                micBtn.classList.remove('listening');
-                document.getElementById('txt_mic_btn').innerText = currentLang === 'te' ? 'వాయిస్ ద్వారా చెప్పండి' : 'Start Voice Input';
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                notesArea.value += (notesArea.value ? ' ' : '') + transcript;
-            };
-
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error', event.error);
-                recognition.stop();
-            };
-
-            micBtn.addEventListener('click', () => {
-                if (isListening) {
-                    recognition.stop();
-                } else {
-                    recognition.lang = currentLang === 'te' ? 'te-IN' : 'en-US';
-                    recognition.start();
-                }
-            });
-        } else {
-            micBtn.style.display = 'none';
-            console.log('Speech recognition not supported in this browser.');
-        }
-
-        // Language toggle listeners
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                updateLanguage(btn.dataset.lang);
-            });
-        });
-
-        // Low Literacy Mode Toggle
-        const literacyBtn = document.getElementById('literacyToggle');
-        literacyBtn.addEventListener('click', () => {
-            const isActive = document.body.classList.toggle('literacy-mode');
-            literacyBtn.classList.toggle('active', isActive);
-
-            if (isActive) {
-                const msg = currentLang === 'te'
-                    ? "తక్కువ అక్షరాస్యత మోడ్ ప్రారంభించబడింది. సహాయం కోసం బొమ్మలను ఉపయోగించండి."
-                    : "Low literacy mode enabled. Use the icons for help.";
-                speak(msg);
-            }
-        });
-
-        const speak = (text) => {
-            window.speechSynthesis.cancel(); // Stop any current speech
-            const ut = new SpeechSynthesisUtterance(text);
-            ut.lang = currentLang === 'te' ? 'te-IN' : 'en-US';
-            window.speechSynthesis.speak(ut);
+            // Hospitals
+            const hSec = document.getElementById('hospitalSection');
+            if (latest.riskLevel === 'High' && latest.suggestedHospitals) {
+                hSec.style.display = 'block';
+                document.getElementById('hospitalList').innerHTML = latest.suggestedHospitals.map(h => `
+                    <div class="glass-card" style="padding: 1.5rem; text-align: left;">
+                        <h4 style="margin-bottom: 0.5rem;">${h.name}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">📍 ${h.location}</p>
+                        <a href="tel:${h.contact}" class="btn-call" style="margin-top: 1rem; padding: 10px 16px; font-size: 0.9rem;">Call Hospital</a>
+                    </div>
+                `).join('');
+            } else { hSec.style.display = 'none'; }
         };
 
-        // Voice guidance button
-        document.getElementById('voiceBtn').addEventListener('click', () => {
-            speak(app.i18n[currentLang].voice_guide);
+        // Event Listeners
+        document.getElementById('langSelect').value = currentLang;
+        document.getElementById('langSelect').addEventListener('change', (e) => {
+            currentLang = e.target.value;
+            localStorage.setItem('medisphere_lang', currentLang);
+            translateUI();
+            renderHistory();
         });
 
-        // Symptom Toggling
-        const symptoms = { fever: false, cough: false, headache: false, vomiting: false, bodyPain: false };
-        document.querySelectorAll('.symptom-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const s = tag.dataset.symptom;
-                symptoms[s] = !symptoms[s];
-                tag.classList.toggle('active');
+        document.getElementById('voiceToggle').checked = voiceEnabled;
+        document.getElementById('voiceToggle').addEventListener('change', (e) => {
+            voiceEnabled = e.target.checked;
+            localStorage.setItem('medisphere_voice', voiceEnabled);
+            if (voiceEnabled) speak(TRANSLATIONS[currentLang].welcome);
+        });
 
-                // Auto-speak in Literacy Mode
-                if (document.body.classList.contains('literacy-mode')) {
-                    const dict = app.i18n[currentLang];
-                    const symptomName = currentLang === 'te' ? tag.querySelector('.lang-te').innerText : tag.querySelector('.lang-en').innerText;
-                    const status = symptoms[s]
-                        ? (currentLang === 'te' ? "ఎంచుకోబడింది" : "Selected")
-                        : (currentLang === 'te' ? "తీసివేయబడింది" : "Removed");
-                    speak(`${symptomName} ${status}`);
-                }
+        document.querySelectorAll('.speaker-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                const key = icon.dataset.speakKey;
+                if (key) speak(TRANSLATIONS[currentLang][key]);
             });
         });
 
-        // Submission
-        document.getElementById('checkBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('checkBtn');
-            const originalText = btn.innerText;
-            btn.innerText = currentLang === 'te' ? 'విశ్లేషిస్తోంది...' : 'Analyzing...';
-            btn.disabled = true;
-
-            const res = await app.checkSymptoms(
-                { ...symptoms, other: document.getElementById('other').value },
-                user.name, user.age || 25, user.gender || 'male'
-            );
-
-            if (res) {
-                document.getElementById('placeholderCard').style.display = 'none';
-                document.getElementById('resultCard').style.display = 'block';
-                document.getElementById('emergencyBanner').style.display = res.riskLevel === 'High' ? 'block' : 'none';
-                document.getElementById('riskLevel').innerText = res.riskLevel + (currentLang === 'te' ? ' ప్రమాదం' : ' Risk');
-                document.getElementById('riskLevel').className = 'risk-badge risk-' + res.riskLevel;
-                document.getElementById('prediction').innerText = res.prediction;
-                document.getElementById('reasonDisplay').innerText = res.reason;
-                document.getElementById('recommendation').innerText = res.recommendation;
-                document.getElementById('date').innerText = new Date(res.createdAt).toLocaleDateString();
-
-                // Hospital Suggestions Logic
-                const hospitalSec = document.getElementById('hospitalSection');
-                const hospitalList = document.getElementById('hospitalList');
-                if (res.riskLevel === 'High' && res.suggestedHospitals && res.suggestedHospitals.length > 0) {
-                    hospitalSec.style.display = 'block';
-                    hospitalList.innerHTML = res.suggestedHospitals.map(h => `
-                        <div style="background: white; border: 1px solid #fee2e2; padding: 1rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="font-weight: 700; color: var(--text-main);">${h.name}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0;">📍 ${h.location}</div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                                <span style="font-size: 0.8rem; background: #fff5f5; color: var(--danger); padding: 2px 8px; border-radius: 4px; font-weight: 600;">${h.specialty}</span>
-                                <a href="tel:${h.contact}" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem;">📞 Call</a>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    hospitalSec.style.display = 'none';
-                }
+        document.getElementById('submitSymptomsBtn').addEventListener('click', async () => {
+            if (selectedSymptoms.size === 0) {
+                speak(currentLang === 'en' ? "Please select at least one symptom." : "దయచేసి కనీసం ఒక లక్షణాన్ని ఎంచుకోండి.");
+                return;
             }
 
-            btn.innerText = originalText;
-            btn.disabled = false;
+            const symptomsObj = {};
+            selectedSymptoms.forEach(s => symptomsObj[s] = true);
+
+            showToast(TRANSLATIONS[currentLang].success_report);
+            await app.checkSymptoms(symptomsObj, user.name, 25, 'Unknown');
+            loadHistory();
+            scrollToSection('statusSection');
         });
 
-        // Initial render
-        updateLanguage('en');
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderHistory(btn.dataset.filter);
+            });
+        });
+
+        // Initialize
+        translateUI();
+        loadHistory();
     </script>
 </body>
-
-</html>
-
 
 </html>

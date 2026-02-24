@@ -25,3 +25,4 @@ build/
 # Project Specific
 server/node_modules/
 client/node_modules/
+.vercel

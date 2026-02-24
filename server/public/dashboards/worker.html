@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - MEDISPHERE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-card h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8faff;
+            font-weight: 600;
+        }
+
+        .risk-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .bg-High {
+            background: #ffebeb;
+            color: var(--danger);
+        }
+
+        .bg-Medium {
+            background: #fff8eb;
+            color: var(--warning);
+        }
+
+        .bg-Low {
+            background: #ebfff8;
+            color: var(--success);
+        }
+
+        .alert-card {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            animation: border-pulse 2s infinite;
+        }
+
+        @keyframes border-pulse {
+            0% {
+                border-color: #feb2b2;
+                box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4);
+            }
+
+            50% {
+                border-color: #f56565;
+                box-shadow: 0 0 0 10px rgba(245, 101, 101, 0);
+            }
+
+            100% {
+                border-color: #feb2b2;
+                box-shadow: 0 0 0 0 rgba(245, 101, 101, 0);
+            }
+        }
+
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border-left: 5px solid var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-fade">
+        <header class="nav">
+            <a href="#" class="logo">MEDISPHERE</a>
+            <div>
+                <span id="userName" style="margin-right: 1rem; font-weight: 600;"></span>
+                <button onclick="app.logout()" class="btn" style="background: #eee;">Logout</button>
+            </div>
+        </header>
+
+        <h2 style="margin-top: 1rem;">Frontline Support Panel</h2>
+        <p style="color: var(--text-muted);">Monitoring rural health alerts and community data.</p>
+
+        <!-- Emergency Alerts Section -->
+        <div id="emergencySection" style="display: none;" class="alert-card">
+            <h3 style="color: var(--danger); display: flex; align-items: center; gap: 8px;">
+                <span>🚨</span> PROMPT EMERGENCY ALERTS
+            </h3>
+            <div id="alertContainer"></div>
+        </div>
+
+        <div class="stats-grid" id="stats">
+            <div class="glass-card stat-card">
+                <p>Total Cases</p>
+                <h2 id="totalCount">0</h2>
+            </div>
+            <div class="glass-card stat-card">
+                <p>High Risk</p>
+                <h2 id="highRiskCount" style="color: var(--danger);">0</h2>
+            </div>
+            <div class="glass-card stat-card">
+                <p>Reports Today</p>
+                <h2 id="todayCount" style="color: var(--success);">0</h2>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>Patient Risk Reports</h3>
+                <select id="riskFilter" class="form-input" style="width: auto;">
+                    <option value="">All Risks</option>
+                    <option value="High">High Risk</option>
+                    <option value="Medium">Medium Risk</option>
+                    <option value="Low">Low Risk</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Symptoms</th>
+                        <th>Risk Level</th>
+                        <th>Reasoning</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsTable">
+                    <!-- Data injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const user = app.getUser();
+        if (!user || user.role !== 'health_worker') window.location.href = '../auth.html';
+        document.getElementById('userName').innerText = 'Worker: ' + user.name;
+
+        const fetchReports = async (filter = '') => {
+            try {
+                const res = await fetch(`${API_URL}/reports/all${filter ? '?riskLevel=' + filter : ''}`, {
+                    headers: { 'x-auth-token': app.getToken() }
+                });
+                const reports = await res.json();
+                renderTable(reports);
+                updateStats(reports);
+                renderAlerts(reports);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        const renderAlerts = (reports) => {
+            const highRisk = reports.filter(r => r.riskLevel === 'High');
+            const section = document.getElementById('emergencySection');
+            const container = document.getElementById('alertContainer');
+
+            if (highRisk.length > 0) {
+                section.style.display = 'block';
+                container.innerHTML = highRisk.map(r => `
+                    <div class="alert-item">
+                        <div>
+                            <strong style="font-size: 1.1rem;">${r.patientName}</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                                Predicted: <span style="color: var(--danger); font-weight: 700;">${r.prediction}</span>
+                            </p>
+                            <p style="font-size: 0.8rem; color: var(--primary); font-style: italic; margin-top: 2px;">
+                                💡 Reasoning: ${r.reason || 'Symptom pattern analysis'}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="risk-tag bg-High">IMMEDIATE ATTENTION</span>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${new Date(r.createdAt).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                section.style.display = 'none';
+            }
+        };
+
+        const renderTable = (reports) => {
+            const tbody = document.getElementById('reportsTable');
+            tbody.innerHTML = reports.map(r => `
+                <tr ${r.riskLevel === 'High' ? 'style="background: #fffafa;"' : ''}>
+                    <td style="font-weight: 600;">${r.patientName}</td>
+                    <td>${Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ') || 'General'}</td>
+                    <td><span class="risk-tag bg-${r.riskLevel}">${r.riskLevel}</span></td>
+                    <td style="font-size: 0.85rem; color: var(--text-muted);">${r.reason || '-'}</td>
+                    <td>${new Date(r.createdAt).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        };
+
+        const updateStats = (reports) => {
+            document.getElementById('totalCount').innerText = reports.length;
+            document.getElementById('highRiskCount').innerText = reports.filter(r => r.riskLevel === 'High').length;
+            document.getElementById('todayCount').innerText = reports.filter(r => new Date(r.createdAt).toDateString() === new Date().toDateString()).length;
+        };
+
+        document.getElementById('riskFilter').addEventListener('change', (e) => fetchReports(e.target.value));
+        fetchReports();
+    </script>
+</body>
+
+</html>

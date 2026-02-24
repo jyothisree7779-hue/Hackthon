@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MEDISPHERE</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <div class="container animate-fade">
+        <header class="nav">
+            <a href="#" class="logo">MEDISPHERE</a>
+            <div>
+                <span id="userName" style="margin-right: 1rem; font-weight: 600;"></span>
+                <button onclick="app.logout()" class="btn" style="background: #eee;">Logout</button>
+            </div>
+        </header>
+
+        <h2 style="margin-top: 1rem;">Risk Intelligence Dashboard</h2>
+        <p style="color: var(--text-muted);">System analytics and predictive healthcare data.</p>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+            <div class="glass-card" style="text-align: center;">
+                <p>AI Predictions Made</p>
+                <h2 id="totalReports">0</h2>
+            </div>
+            <div class="glass-card" style="text-align: center;">
+                <p>High Risk Alerts</p>
+                <h2 id="highRiskTotal" style="color: var(--danger);">0</h2>
+            </div>
+        </div>
+
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <h3>PHC Load Prediction (Next 7 Days)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">AI-powered forecast based on
+                current symptom trends and risk levels.</p>
+
+            <div id="predictionList"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                <!-- Forecast items injected here -->
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3>System Status</h3>
+            <p style="margin-top: 1rem;">The backend is connected to MongoDB Atlas and processing requests from rural
+                health workers and patients.</p>
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: #f8faff; border-radius: 12px; border-left: 5px solid var(--success);">
+                <strong>Status:</strong> All systems operational.
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const user = app.getUser();
+        if (!user || user.role !== 'admin') window.location.href = '../auth.html';
+        document.getElementById('userName').innerText = 'Admin: ' + user.name;
+
+        const loadStats = async () => {
+            const res = await fetch(`${API_URL}/reports/all`, {
+                headers: { 'x-auth-token': app.getToken() }
+            });
+            const reports = await res.json();
+            document.getElementById('totalReports').innerText = reports.length;
+            document.getElementById('highRiskTotal').innerText = reports.filter(r => r.riskLevel === 'High').length;
+
+            calculateForecast(reports);
+        };
+
+        const calculateForecast = (reports) => {
+            const container = document.getElementById('predictionList');
+            const today = new Date();
+
+            // Simulation logic: 
+            // 1. Get recent volume (last 3 days)
+            // 2. Apply a variance factor based on High Risk report density
+            const recentReports = reports.filter(r => {
+                const date = new Date(r.createdAt);
+                const diff = (today - date) / (1000 * 60 * 60 * 24);
+                return diff <= 3;
+            }).length;
+
+            const baseLevel = Math.max(3, Math.ceil(recentReports / 3));
+            const riskFactor = reports.filter(r => r.riskLevel === 'High').length / (reports.length || 1);
+
+            let forecastHtml = '';
+            for (let i = 1; i <= 7; i++) {
+                const forecastDate = new Date();
+                forecastDate.setDate(today.getDate() + i);
+
+                // Add some pseudo-randomness + trend
+                const predictedLoad = Math.max(1, Math.round(baseLevel * (1 + riskFactor * 1.5) + (Math.random() * 2 - 1)));
+                const intensity = predictedLoad > 10 ? 'High' : (predictedLoad > 5 ? 'Medium' : 'Low');
+                const color = intensity === 'High' ? 'var(--danger)' : (intensity === 'Medium' ? 'var(--warning)' : 'var(--success)');
+
+                forecastHtml += `
+                    <div style="background: #f8faff; padding: 1rem; border-radius: 12px; text-align: center; border-bottom: 3px solid ${color};">
+                        <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">${forecastDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</p>
+                        <h3 style="margin: 8px 0; color: ${color};">${predictedLoad}</h3>
+                        <p style="font-size: 0.7rem; text-transform: uppercase; font-weight: 700; opacity: 0.8;">${intensity}</p>
+                    </div>
+                `;
+            }
+            container.innerHTML = forecastHtml;
+        };
+        loadStats();
+    </script>
+</body>
+
+</html>

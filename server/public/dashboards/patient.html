@@ -90,12 +90,140 @@
             font-weight: 800;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             font-size: 1.1rem;
         }
 
         [data-speak] {
             cursor: pointer;
+        }
+
+        /* AI Chatbot Styles */
+        .chat-bubble {
+            position: fixed;
+            bottom: 8rem;
+            right: 2rem;
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .chat-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 1rem;
+            right: 2rem;
+            width: 380px;
+            height: 550px;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1001;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f8faff;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .message.bot {
+            background: white;
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            background: white;
+            display: flex;
+            gap: 0.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #f1f5f9;
+            border-radius: 30px;
+            font-size: 1rem;
+        }
+
+        .chat-btn-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: 90%;
+                height: 75vh;
+                right: 5%;
+                bottom: 1rem;
+            }
+
+            .chat-bubble {
+                bottom: 2rem;
+                right: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -275,6 +403,34 @@
         Message Sent Successfully
     </div>
 
+    <!-- AI Chatbot UI Components -->
+    <div class="chat-bubble" id="chatBtnBubble">🤖</div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">🤖</span>
+                <div>
+                    <div style="font-weight: 800; font-size: 1.1rem;">AI Health Assistant</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Online • Multilingual</div>
+                </div>
+            </div>
+            <button onclick="toggleChat()"
+                style="background:transparent; border:none; color:white; font-size: 1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                Namaste! I am your AI Health Assistant. How can I help you today? You can tell me your symptoms in
+                English, Telugu, or Hindi.
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type or use mic...">
+            <button class="chat-btn-send" id="chatVoiceBtn">🎤</button>
+            <button class="chat-btn-send" onclick="sendChatMessage()">➞</button>
+        </div>
+    </div>
+
     <script src="../js/app.js"></script>
     <script>
         const TRANSLATIONS = {
@@ -378,9 +534,13 @@
 
         // UI Interactions
         const scrollToSection = (id) => {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-            const key = document.querySelector(`[onclick="scrollToSection('${id}')"]`).dataset.speakKey;
-            speak(TRANSLATIONS[currentLang][key]);
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            const trigger = document.querySelector(`[onclick="scrollToSection('${id}')"]`);
+            if (trigger) {
+                const key = trigger.dataset.speakKey;
+                if (key) speak(TRANSLATIONS[currentLang][key]);
+            }
         };
 
         const showToast = (msg) => {
@@ -531,6 +691,110 @@
         // Initialize
         translateUI();
         loadHistory();
+
+        // Chatbot Logic
+        const chatWindow = document.getElementById('chatWindow');
+        const chatBubble = document.getElementById('chatBtnBubble');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+
+        let chatBotActive = false;
+
+        function toggleChat() {
+            chatBotActive = !chatBotActive;
+            chatWindow.style.display = chatBotActive ? 'flex' : 'none';
+            chatBubble.style.display = chatBotActive ? 'none' : 'flex';
+            if (chatBotActive) {
+                const welcome = (currentLang === 'en' ? "Tell me your symptoms." : (currentLang === 'te' ? "మీ లక్షణాలను నాకు తెలియజేయండి." : "मुझे अपने लक्षण बताएं।"));
+                speak(welcome);
+            }
+        }
+
+        chatBubble.onclick = toggleChat;
+
+        function addMessage(text, side) {
+            const msg = document.createElement('div');
+            msg.className = `message ${side} animate-fade`;
+            msg.innerText = text;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (side === 'bot') speak(text);
+        }
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            chatInput.value = '';
+
+            // Mapping Logic (Simple Keyword matching)
+            const symptomsToFind = {
+                fever: ['fever', 'hot', 'jwaram', 'bukhar', 'జ్వరం', 'बुखार'],
+                cough: ['cough', 'khansi', 'daggu', 'దగ్గు', 'खांसी'],
+                headache: ['headache', 'head pain', 'talanopi', 'sir dard', 'తలనొప్పి', 'सिरदर्द'],
+                vomiting: ['vomit', 'nausea', 'vantulu', 'ultti', 'వాంతులు', 'उल्टी'],
+                bodyPain: ['body pain', 'muscle pain', 'ontinopi', 'badan dard', 'ఒంటి నొప్పులు', 'बदन दर्द'],
+                breathing: ['breathing', 'breath', 'swasa', 'saans', 'శ్వాస', 'सांस']
+            };
+
+            const detected = {};
+            let hasSymptoms = false;
+            const lowerText = text.toLowerCase();
+
+            for (const [key, keywords] of Object.entries(symptomsToFind)) {
+                if (keywords.some(kw => lowerText.includes(kw))) {
+                    detected[key] = true;
+                    hasSymptoms = true;
+                }
+            }
+
+            setTimeout(async () => {
+                if (hasSymptoms) {
+                    const symptomNames = Object.keys(detected).map(k => TRANSLATIONS[currentLang][k] || k).join(', ');
+                    addMessage(currentLang === 'en' ? `I detected: ${symptomNames}. Analyzing your health status...` : (currentLang === 'te' ? `నేను వీటిని గుర్తించాను: ${symptomNames}. మీ ఆరోగ్య స్థితిని విశ్లేషిస్తున్నాను...` : `मैंने पाया है: ${symptomNames}. आपके स्वास्थ्य की स्थिति का विश्लेषण कर रहा हूँ...`), 'bot');
+
+                    const res = await app.checkSymptoms(detected, user.name, 25, 'Unknown');
+                    if (res) {
+                        addMessage(currentLang === 'en' ? `Result: ${res.riskLevel} Risk. ${res.prediction}. Recommendation: ${res.recommendation}` : (currentLang === 'te' ? `ఫలితం: ${res.riskLevel} ప్రమాదం. ${res.prediction}. సిఫార్సు: ${res.recommendation}` : `परिणाम: ${res.riskLevel} जोखिम। ${res.prediction}। अनुशंसा: ${res.recommendation}`), 'bot');
+                        loadHistory();
+                        scrollToSection('statusSection');
+                    }
+                } else {
+                    addMessage(currentLang === 'en' ? "I'm sorry, I couldn't understand the symptoms. Please try keywords like 'fever' or 'cough', or use the icons on the dashboard." : (currentLang === 'te' ? "క్షమించండి, నాకు లక్షణాలు అర్థం కాలేదు. దయచేసి 'జ్వరం' లేదా 'దగ్గు' వంటి పదాలను ఉపయోగించండి." : "क्षमा करें, मुझे लक्षण समझ नहीं आए। कृपया 'बुखार' या 'खांसी' जैसे शब्दों का उपयोग करें।"), 'bot');
+                }
+            }, 1000);
+        }
+
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+
+        // Chat Voice Input
+        const chatVoiceBtn = document.getElementById('chatVoiceBtn');
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognizer = new SpeechRecognition();
+            recognizer.continuous = false;
+
+            recognizer.onstart = () => {
+                chatVoiceBtn.innerText = '🛑';
+                chatVoiceBtn.style.background = 'var(--danger)';
+            };
+            recognizer.onend = () => {
+                chatVoiceBtn.innerText = '🎤';
+                chatVoiceBtn.style.background = 'var(--primary)';
+            };
+            recognizer.onresult = (e) => {
+                chatInput.value = e.results[0][0].transcript;
+                sendChatMessage();
+            };
+
+            chatVoiceBtn.onclick = () => {
+                recognizer.lang = currentLang === 'te' ? 'te-IN' : (currentLang === 'hi' ? 'hi-IN' : 'en-US');
+                recognizer.start();
+            };
+        } else {
+            chatVoiceBtn.style.display = 'none';
+        }
     </script>
 </body>
 

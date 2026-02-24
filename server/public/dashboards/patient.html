@@ -299,7 +299,18 @@
                         <p id="recommendation"
                             style="background: var(--bg-main); padding: 1rem; border-radius: 12px; margin-top: 0.5rem;">
                         </p>
+
+                        <div id="hospitalSection" style="display: none; margin-top: 1.5rem;">
+                            <h4
+                                style="color: var(--danger); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                                🏥 Nearby Hospitals (Urgent Care)
+                            </h4>
+                            <div id="hospitalList" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <!-- Hospitals injected here -->
+                            </div>
+                        </div>
                     </div>
+
                     <div
                         style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
                         <span id="confidence"></span>
@@ -481,8 +492,26 @@
                 document.getElementById('prediction').innerText = res.prediction;
                 document.getElementById('reasonDisplay').innerText = res.reason;
                 document.getElementById('recommendation').innerText = res.recommendation;
-                document.getElementById('confidence').innerText = (currentLang === 'te' ? 'AI విశ్వాసం: ' : 'AI Confidence: ') + res.confidenceScore + '%';
                 document.getElementById('date').innerText = new Date(res.createdAt).toLocaleDateString();
+
+                // Hospital Suggestions Logic
+                const hospitalSec = document.getElementById('hospitalSection');
+                const hospitalList = document.getElementById('hospitalList');
+                if (res.riskLevel === 'High' && res.suggestedHospitals && res.suggestedHospitals.length > 0) {
+                    hospitalSec.style.display = 'block';
+                    hospitalList.innerHTML = res.suggestedHospitals.map(h => `
+                        <div style="background: white; border: 1px solid #fee2e2; padding: 1rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="font-weight: 700; color: var(--text-main);">${h.name}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0;">📍 ${h.location}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                                <span style="font-size: 0.8rem; background: #fff5f5; color: var(--danger); padding: 2px 8px; border-radius: 4px; font-weight: 600;">${h.specialty}</span>
+                                <a href="tel:${h.contact}" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem;">📞 Call</a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    hospitalSec.style.display = 'none';
+                }
             }
 
             btn.innerText = originalText;

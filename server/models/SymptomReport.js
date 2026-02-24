@@ -25,6 +25,7 @@ const symptomReportSchema = new mongoose.Schema({
   prediction: String, // Possible condition
   reason: String, // Transparent reasoning
   recommendation: String,
+  suggestedHospitals: [Object],
   confidenceScore: Number,
   createdAt: {
     type: Date,

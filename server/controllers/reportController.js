@@ -1,9 +1,11 @@
 const SymptomReport = require('../models/SymptomReport');
+const User = require('../models/User');
 const { analyzeSymptoms } = require('../services/aiService');
 
 const createReport = async (req, res) => {
     try {
-        const analysis = analyzeSymptoms(req.body.symptoms);
+        const user = await User.findById(req.user.id);
+        const analysis = analyzeSymptoms(req.body.symptoms, user.location);
         const report = new SymptomReport({
             userId: req.user.id,
             patientName: req.body.patientName,

@@ -11,9 +11,20 @@ const WEIGHTS = {
     bodyPain: 1,
 };
 
+const HOSPITALS = {
+    "default": [
+        { name: "General District Hospital", location: "District Center", contact: "011-2345678", specialty: "Emergency & Trauma" },
+        { name: "Public Health Institute", location: "Mid-Town", contact: "011-9876543", specialty: "Respiratory Care" }
+    ],
+    "village_a": [
+        { name: "St. Mary Medical Center", location: "Village A North", contact: "9988776655", specialty: "Multi-specialty" },
+        { name: "Rural Care Clinic", location: "Village A South", contact: "9900112233", specialty: "General Medicine" }
+    ],
+};
+
 const getWeight = (symptomName) => WEIGHTS[symptomName] || 0;
 
-const analyzeSymptoms = (symptoms) => {
+const analyzeSymptoms = (symptoms, location = "default") => {
     let score = 0;
 
     // Basic symptoms
@@ -32,10 +43,15 @@ const analyzeSymptoms = (symptoms) => {
         score += 10;
     }
 
+    // Normalize location key
+    const locationKey = (location || 'default').toLowerCase().replace(/\s+/g, '_');
+    const hospitalList = HOSPITALS[locationKey] || HOSPITALS["default"];
+
     let riskLevel = 'Low';
     let recommendation = 'Home Care Advice: Rest, hydration, and monitoring.';
     let prediction = 'Minor Viral or Seasonal Ailment';
     let confidenceScore = 85 + Math.random() * 10;
+    let suggestedHospitals = [];
 
     // Generate Reason String
     let activeSymptoms = [];
@@ -53,6 +69,7 @@ const analyzeSymptoms = (symptoms) => {
         riskLevel = 'High';
         prediction = 'Acute Respiratory Infection / Severe Complication';
         recommendation = 'Immediate Hospital Visit: Urgent medical intervention required.';
+        suggestedHospitals = hospitalList;
         if (otherText.includes('difficu') || otherText.includes('breath')) reason += ' + respiratory distress';
         reason += ' = Critical health risk';
     } else if (score >= 4) {
@@ -69,6 +86,7 @@ const analyzeSymptoms = (symptoms) => {
         prediction,
         recommendation,
         reason,
+        suggestedHospitals,
         confidenceScore: parseFloat(confidenceScore.toFixed(2)),
         score
     };

@@ -1,4 +1,4 @@
-const API_URL = '/api';
+const API_URL = window.location.origin + '/api';
 
 const app = {
     // Utility to get user from localStorage

@@ -4,18 +4,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register - MEDISPHERE</title>
+    <title>Access MEDISPHERE</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: #fff;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .auth-split-visual {
+            flex: 1.2;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(14, 165, 233, 0.4)), url('assets/hero.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            color: white;
+            position: relative;
+        }
+
+        .auth-split-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.3);
+        }
+
+        .visual-content {
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+        }
+
+        .auth-container-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: #f8faff;
+            overflow-y: auto;
+        }
+
+        .auth-card-modern {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 1024px) {
+            .auth-split-visual {
+                display: none;
+            }
+
+            body {
+                justify-content: center;
+                background: #f8faff;
+            }
+
+            .auth-container-side {
+                padding: 1.5rem;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
-<body style="background: #eef2f7; min-height: 100vh; padding: 1rem 0;">
-    <div class="container animate-fade" style="max-width: 450px; margin: auto;">
-        <div class="glass-card">
-            <h2 id="authTitle" style="text-align: center; margin-bottom: 2rem;">Access MEDISPHERE</h2>
+<body>
+    <div class="auth-split-visual">
+        <div class="visual-content">
+            <h2 style="font-size: 3rem; font-weight: 800; margin-bottom: 2rem; letter-spacing: -1px;">Empowering Care in
+                Every Corner.</h2>
+            <p style="font-size: 1.2rem; line-height: 1.8; opacity: 0.9;">Join the mission to provide professional
+                diagnostics and support to rural communities through the power of AI.</p>
+        </div>
+    </div>
+
+    <div class="auth-container-side">
+        <div class="auth-card-modern animate-fade">
+            <a href="index.html" class="logo"
+                style="display: block; text-align: center; margin-bottom: 2.5rem;">MEDISPHERE</a>
+
+            <h2 id="authTitle" style="font-size: 1.8rem; margin-bottom: 0.5rem; text-align: center;">Welcome Back</h2>
+            <p id="authSubtitle"
+                style="text-align: center; color: var(--text-muted); margin-bottom: 2.5rem; font-size: 0.95rem;">Please
+                enter your details to access the platform.</p>
 
             <div id="roleSelector" style="margin-bottom: 1.5rem;">
-                <label>Select Your Role</label>
-                <select id="role" class="form-input">
+                <label
+                    style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;">Select
+                    Your Role</label>
+                <select id="role" class="form-input" style="border: 2px solid #f1f5f9; background: #fcfcfd;">
                     <option value="patient">Patient</option>
                     <option value="health_worker">Health Worker</option>
                     <option value="admin">Admin</option>
@@ -36,12 +124,14 @@
                     <input type="password" id="password" placeholder="Password" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 16px;">Log
+                    In</button>
             </form>
 
-            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted);">
                 <span id="toggleText">Don't have an account?</span>
-                <a href="#" id="toggleAuth" style="color: var(--primary); font-weight: 600;">Register</a>
+                <a href="#" id="toggleAuth"
+                    style="color: var(--primary); font-weight: 700; text-decoration: none;">Create One &rarr;</a>
             </p>
         </div>
     </div>
@@ -52,6 +142,7 @@
         const authForm = document.getElementById('authForm');
         const registerFields = document.getElementById('registerFields');
         const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
         const toggleAuth = document.getElementById('toggleAuth');
         const toggleText = document.getElementById('toggleText');
 
@@ -59,10 +150,11 @@
             e.preventDefault();
             isLogin = !isLogin;
             registerFields.style.display = isLogin ? 'none' : 'block';
-            authTitle.innerText = isLogin ? 'Access MEDISPHERE' : 'Join MEDISPHERE';
-            authForm.querySelector('button').innerText = isLogin ? 'Login' : 'Register';
+            authTitle.innerText = isLogin ? 'Welcome Back' : 'Create Account';
+            authSubtitle.innerText = isLogin ? 'Please enter your details to access the platform.' : 'Join MEDISPHERE and start your healthcare journey.';
+            authForm.querySelector('button').innerText = isLogin ? 'Log In' : 'Sign Up';
             toggleText.innerText = isLogin ? "Don't have an account?" : "Already have an account?";
-            toggleAuth.innerText = isLogin ? 'Register' : 'Login';
+            toggleAuth.innerText = isLogin ? 'Create One →' : 'Log In →';
         });
 
         authForm.addEventListener('submit', async (e) => {

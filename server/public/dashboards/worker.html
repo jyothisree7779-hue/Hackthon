@@ -7,97 +7,59 @@
     <title>Worker Dashboard - MEDISPHERE</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .stats-grid {
+        .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
 
-        .stat-card {
-            text-align: center;
-        }
-
-        .stat-card h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        th,
-        td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background: #f8faff;
-            font-weight: 600;
-        }
-
-        .risk-tag {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.75rem;
-        }
-
-        .bg-High {
-            background: #ffebeb;
-            color: var(--danger);
-        }
-
-        .bg-Medium {
-            background: #fff8eb;
-            color: var(--warning);
-        }
-
-        .bg-Low {
-            background: #ebfff8;
-            color: var(--success);
-        }
-
-        .alert-card {
-            background: #fff5f5;
-            border: 2px solid #feb2b2;
-            padding: 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            animation: border-pulse 2s infinite;
-        }
-
-        @keyframes border-pulse {
-            0% {
-                border-color: #feb2b2;
-                box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4);
-            }
-
-            50% {
-                border-color: #f56565;
-                box-shadow: 0 0 0 10px rgba(245, 101, 101, 0);
-            }
-
-            100% {
-                border-color: #feb2b2;
-                box-shadow: 0 0 0 0 rgba(245, 101, 101, 0);
-            }
-        }
-
-        .alert-item {
+        .alert-item-worker {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
+            padding: 1.2rem;
             background: white;
             border-radius: 12px;
             margin-top: 1rem;
-            border-left: 5px solid var(--danger);
+            box-shadow: var(--shadow-md);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search_bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            width: auto;
+            min-width: 150px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 0.4rem;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            text-align: right;
         }
     </style>
 </head>
@@ -112,51 +74,64 @@
             </div>
         </header>
 
-        <h2 style="margin-top: 1rem;">Frontline Support Panel</h2>
-        <p style="color: var(--text-muted);">Monitoring rural health alerts and community data.</p>
+        <h2 style="margin-top: 1rem;">Frontline Health Monitor</h2>
+        <p style="color: var(--text-muted);">Manage assigned patients and respond to critical alerts.</p>
 
-        <!-- Emergency Alerts Section -->
-        <div id="emergencySection" style="display: none;" class="alert-card">
-            <h3 style="color: var(--danger); display: flex; align-items: center; gap: 8px;">
-                <span>🚨</span> PROMPT EMERGENCY ALERTS
-            </h3>
-            <div id="alertContainer"></div>
-        </div>
-
-        <div class="stats-grid" id="stats">
-            <div class="glass-card stat-card">
-                <p>Total Cases</p>
-                <h2 id="totalCount">0</h2>
+        <!-- 1. Overview Summary -->
+        <div class="stats-container">
+            <div class="glass-card" style="text-align: center;">
+                <span class="card-icon">👥</span>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Assigned Cases</p>
+                <h2 id="assignedCount">0</h2>
             </div>
-            <div class="glass-card stat-card">
-                <p>High Risk</p>
-                <h2 id="highRiskCount" style="color: var(--danger);">0</h2>
+            <div class="glass-card" style="text-align: center;">
+                <span class="card-icon">⚠️</span>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">High Priority</p>
+                <h2 id="highPriorityCount" class="text-danger">0</h2>
             </div>
-            <div class="glass-card stat-card">
-                <p>Reports Today</p>
-                <h2 id="todayCount" style="color: var(--success);">0</h2>
+            <div class="glass-card" style="text-align: center;">
+                <span class="card-icon">✅</span>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Resolved Today</p>
+                <h2 id="resolvedTodayCount" class="text-success">0</h2>
             </div>
         </div>
 
+        <!-- 2. Priority Alerts Section -->
+        <div id="prioritySection" style="margin-bottom: 2.5rem;">
+            <h3 style="margin-bottom: 1rem;">⚠️ Priority Alerts</h3>
+            <div id="priorityContainer">
+                <p id="noPriority"
+                    style="text-align: center; color: var(--text-muted); padding: 2rem; background: #f8faff; border-radius: 12px;">
+                    No urgent cases assigned.</p>
+            </div>
+        </div>
+
+        <!-- 3. Assigned Patients List -->
         <div class="glass-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3>Patient Risk Reports</h3>
-                <select id="riskFilter" class="form-input" style="width: auto;">
-                    <option value="">All Risks</option>
-                    <option value="High">High Risk</option>
-                    <option value="Medium">Medium Risk</option>
-                    <option value="Low">Low Risk</option>
-                </select>
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h3>Assigned Patients</h3>
+                <div class="search_bar" style="margin-bottom: 0;">
+                    <input type="text" id="patientSearch" class="search-input" placeholder="Search by name...">
+                    <select id="riskFilter" class="filter-select">
+                        <option value="">All Risks</option>
+                        <option value="High">High Risk</option>
+                        <option value="Medium">Medium Risk</option>
+                        <option value="Low">Low Risk</option>
+                    </select>
+                </div>
             </div>
+
             <div class="table-responsive">
-                <table>
+                <table class="table-professional">
                     <thead>
                         <tr>
-                            <th>Patient</th>
+                            <th>Patient Name</th>
                             <th>Symptoms</th>
                             <th>Risk Level</th>
-                            <th>Reasoning</th>
                             <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="reportsTable">
@@ -164,8 +139,61 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
+
+        <!-- 4. Patient Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3 id="modalPatientName"
+                    style="margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem;">
+                    Patient Intake Details</h3>
+
+                <div id="modalBody">
+                    <div class="detail-row">
+                        <span class="detail-label">Age / Gender</span>
+                        <span class="detail-value" id="modalAgeGender">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Reported Symptoms</span>
+                        <span class="detail-value" id="modalSymptoms" style="color: var(--primary);">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">AI Risk Level</span>
+                        <span id="modalRiskBadge" class="badge bg-primary">Low</span>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: #f8faff; border-radius: 12px;">
+                        <h4 style="margin-bottom: 0.5rem;">🚨 AI Risk Explanation</h4>
+                        <p id="modalReason" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main);">-</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: #eef2ff; border-radius: 12px;">
+                        <h4 style="margin-bottom: 0.5rem;">💡 Suggested Action</h4>
+                        <p id="modalAction" style="font-size: 0.9rem; font-weight: 600; color: var(--primary);">-</p>
+                    </div>
+
+                    <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <button class="btn btn-primary" id="modalCallBtn">📞 Call Patient</button>
+                        <button class="btn" style="background: #eee;" onclick="closeModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Field Status Section -->
+        <footer style="margin-top: 3rem; padding: 2rem 0; border-top: 1px solid #eee;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem;">
+                <div style="display: flex; gap: 2rem; color: var(--text-muted); font-size: 0.85rem;">
+                    <span>👤 Worker: <strong class="text-primary" id="statusWorkerName"></strong></span>
+                    <span>🏥 PHC: <strong class="text-primary" id="statusPHCName">Main PHC</strong></span>
+                    <span>📊 Total Handled: <strong id="statusTotalHandled">0</strong></span>
+                    <span>🔄 Sync: <strong id="statusSyncTime">-</strong></span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Health Worker Field Support v2.0</p>
+            </div>
+        </footer>
     </div>
 
     <script src="../js/app.js"></script>
@@ -173,71 +201,133 @@
         const user = app.getUser();
         if (!user || user.role !== 'health_worker') window.location.href = '../auth.html';
         document.getElementById('userName').innerText = 'Worker: ' + user.name;
+        document.getElementById('statusWorkerName').innerText = user.name;
 
-        const fetchReports = async (filter = '') => {
+        let allReports = [];
+        let archivedIds = JSON.parse(localStorage.getItem('resolved_cases') || '[]');
+
+        const loadWorkerData = async () => {
             try {
-                const res = await fetch(`${API_URL}/reports/all${filter ? '?riskLevel=' + filter : ''}`, {
+                const res = await fetch(`${API_URL}/reports/all`, {
                     headers: { 'x-auth-token': app.getToken() }
                 });
-                const reports = await res.json();
-                renderTable(reports);
-                updateStats(reports);
-                renderAlerts(reports);
+                allReports = await res.json();
+
+                updateStats();
+                renderPriorityAlerts();
+                updateReportsTable();
             } catch (err) {
-                console.error(err);
+                console.error('Fetch error:', err);
             }
         };
 
-        const renderAlerts = (reports) => {
-            const highRisk = reports.filter(r => r.riskLevel === 'High');
-            const section = document.getElementById('emergencySection');
-            const container = document.getElementById('alertContainer');
+        const updateStats = () => {
+            const activeReports = allReports.filter(r => !archivedIds.includes(r._id));
+            const highPriority = activeReports.filter(r => r.riskLevel === 'High' || r.riskLevel === 'Medium').length;
+            const resolvedToday = archivedIds.length; // Simplified for presentation
 
-            if (highRisk.length > 0) {
-                section.style.display = 'block';
-                container.innerHTML = highRisk.map(r => `
-                    <div class="alert-item">
-                        <div>
-                            <strong style="font-size: 1.1rem;">${r.patientName}</strong>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-                                Predicted: <span style="color: var(--danger); font-weight: 700;">${r.prediction}</span>
-                            </p>
-                            <p style="font-size: 0.8rem; color: var(--primary); font-style: italic; margin-top: 2px;">
-                                💡 Reasoning: ${r.reason || 'Symptom pattern analysis'}
-                            </p>
-                        </div>
-                        <div style="text-align: right;">
-                            <span class="risk-tag bg-High">IMMEDIATE ATTENTION</span>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${new Date(r.createdAt).toLocaleString()}</p>
-                        </div>
+            document.getElementById('assignedCount').innerText = activeReports.length;
+            document.getElementById('highPriorityCount').innerText = highPriority;
+            document.getElementById('resolvedTodayCount').innerText = resolvedToday;
+            document.getElementById('statusTotalHandled').innerText = allReports.length;
+            document.getElementById('statusSyncTime').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
+
+        const renderPriorityAlerts = () => {
+            const container = document.getElementById('priorityContainer');
+            const priorityCases = allReports.filter(r => (r.riskLevel === 'High' || r.riskLevel === 'Medium') && !archivedIds.includes(r._id));
+
+            if (priorityCases.length === 0) {
+                container.innerHTML = `<p id="noPriority" style="text-align: center; color: var(--text-muted); padding: 2rem; background: #f8faff; border-radius: 12px;">No urgent cases assigned.</p>`;
+                return;
+            }
+
+            container.innerHTML = priorityCases.map(r => `
+                <div class="priority-banner priority-${r.riskLevel} animate-fade">
+                    <div>
+                        <h4 style="margin: 0;">${r.patientName}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                            ${Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ')}
+                        </p>
+                        <p style="font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-top: 4px;">
+                            📍 Mobile Clinic (Rural Unit) • ${new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
                     </div>
-                `).join('');
-            } else {
-                section.style.display = 'none';
-            }
-        };
-
-        const renderTable = (reports) => {
-            const tbody = document.getElementById('reportsTable');
-            tbody.innerHTML = reports.map(r => `
-                <tr ${r.riskLevel === 'High' ? 'style="background: #fffafa;"' : ''}>
-                    <td style="font-weight: 600;">${r.patientName}</td>
-                    <td>${Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ') || 'General'}</td>
-                    <td><span class="risk-tag bg-${r.riskLevel}">${r.riskLevel}</span></td>
-                    <td style="font-size: 0.85rem; color: var(--text-muted);">${r.reason || '-'}</td>
-                    <td>${new Date(r.createdAt).toLocaleDateString()}</td>
-                </tr>
+                    <div style="display: flex; gap: 0.8rem; align-items: center;">
+                        <span class="badge bg-${r.riskLevel === 'High' ? 'danger' : 'warning'}">${r.riskLevel}</span>
+                        <button class="btn btn-primary" onclick="viewDetails('${r._id}')">View Details</button>
+                        <button class="btn" style="background: #eee; padding: 10px;" onclick="resolveCase('${r._id}')">✓</button>
+                    </div>
+                </div>
             `).join('');
         };
 
-        const updateStats = (reports) => {
-            document.getElementById('totalCount').innerText = reports.length;
-            document.getElementById('highRiskCount').innerText = reports.filter(r => r.riskLevel === 'High').length;
-            document.getElementById('todayCount').innerText = reports.filter(r => new Date(r.createdAt).toDateString() === new Date().toDateString()).length;
+        const updateReportsTable = () => {
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            const riskFilter = document.getElementById('riskFilter').value;
+            const tbody = document.getElementById('reportsTable');
+
+            const filtered = allReports.filter(r => {
+                const matchesSearch = r.patientName.toLowerCase().includes(searchTerm);
+                const matchesRisk = !riskFilter || r.riskLevel === riskFilter;
+                return matchesSearch && matchesRisk;
+            });
+
+            tbody.innerHTML = filtered.map(r => {
+                const isResolved = archivedIds.includes(r._id);
+                return `
+                <tr ${r.riskLevel === 'High' && !isResolved ? 'style="background: #fffafa;"' : ''}>
+                    <td style="font-weight: 600;">${r.patientName}</td>
+                    <td>${Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ') || 'General'}</td>
+                    <td><span class="badge bg-${r.riskLevel}">${r.riskLevel}</span></td>
+                    <td>${new Date(r.createdAt).toLocaleDateString()}</td>
+                    <td><span class="badge ${isResolved ? 'bg-success' : 'bg-primary'}">${isResolved ? 'Resolved' : 'Active'}</span></td>
+                    <td><button class="btn" style="padding: 6px 12px; font-size: 0.75rem; background: #f0f0f0;" onclick="viewDetails('${r._id}')">Details</button></td>
+                </tr>
+            `;
+            }).join('');
         };
 
-        document.getElementById('riskFilter').addEventListener('change', (e) => fetchReports(e.target.value));
-        fetchReports();
+        // Modal Logic
+        const modal = document.getElementById('detailsModal');
+        const closeModal = () => modal.style.display = "none";
+        document.querySelector('.close-modal').onclick = closeModal;
+        window.onclick = (e) => { if (e.target == modal) closeModal(); };
+
+        const viewDetails = (id) => {
+            const r = allReports.find(x => x._id === id);
+            if (!r) return;
+
+            document.getElementById('modalPatientName').innerText = r.patientName;
+            document.getElementById('modalAgeGender').innerText = `${r.age || 'N/A'} yrs / ${r.gender || 'N/A'}`;
+            document.getElementById('modalSymptoms').innerText = Object.keys(r.symptoms).filter(k => r.symptoms[k] === true).join(', ') || 'No specific symptoms';
+
+            const badge = document.getElementById('modalRiskBadge');
+            badge.innerText = r.riskLevel + ' Risk';
+            badge.className = `badge bg-${r.riskLevel}`;
+
+            document.getElementById('modalReason').innerText = r.reason || 'Symptom pattern matches general bacterial/viral profile.';
+            document.getElementById('modalAction').innerText = r.recommendation || 'Please prioritize based on symptom progression.';
+
+            modal.style.display = "block";
+        };
+
+        const resolveCase = (id) => {
+            if (!archivedIds.includes(id)) {
+                archivedIds.push(id);
+                localStorage.setItem('resolved_cases', JSON.stringify(archivedIds));
+                updateStats();
+                renderPriorityAlerts();
+                updateReportsTable();
+            }
+        };
+
+        // UI Listeners
+        document.getElementById('patientSearch').addEventListener('input', updateReportsTable);
+        document.getElementById('riskFilter').addEventListener('change', updateReportsTable);
+
+        loadWorkerData();
+        setInterval(loadWorkerData, 30000);
     </script>
 </body>
 
